@@ -1,12 +1,16 @@
 import React from 'react';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import authSelectors from '../../redux/auth/auth-selectors';
 import authOperations from '../../redux/auth/auth-operations';
 
 import s from './UserMenu.module.css';
 
-const UserMenu = ({ userName, onLogout }) => {
+const UserMenu = () => {
+const dispatch = useDispatch();
+const userName = useSelector(authSelectors.getUserName);
+const onLogout= () => dispatch(authOperations.logout());
+
   return (
     <div className={s.container}>
       <span className={s.avatar}>{userName.slice(0, 1)}</span>
@@ -18,12 +22,12 @@ const UserMenu = ({ userName, onLogout }) => {
   );
 };
 
-const mapStateToProps = state => ({
-  userName: authSelectors.getUserName(state),
-});
+// const mapStateToProps = state => ({
+//   userName: authSelectors.getUserName(state),
+// });
 
-const mapDispatchToProps = dispatch => ({
-  onLogout: () => dispatch(authOperations.logout()),
-});
+// const mapDispatchToProps = dispatch => ({
+//   onLogout: () => dispatch(authOperations.logout()),
+// });
 
-export default connect(mapStateToProps, mapDispatchToProps)(UserMenu);
+export default UserMenu;

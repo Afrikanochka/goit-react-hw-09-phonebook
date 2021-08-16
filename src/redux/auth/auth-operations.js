@@ -12,41 +12,71 @@ const token = {
   },
 };
 
-const register = userData => async dispatch => {
+/*
+ * POST @ /users/signup
+ * body: { name, email, password }
+ * После успешной регистрации добавляем токен в HTTP-заголовок
+ */
+const register = userData => dispatch => {
+  // console.log('register');
   dispatch(authActions.registerRequest())
 
-  try {
-    const response = await axios.post('/users/signup', userData);
-    token.set(response.data.token);
-    dispatch(authActions.registerSuccess(response.data))
-  } catch (error) {
-    dispatch(authActions.registerError(error.message))
-  }
-}
+  
+    axios
+    .post('/users/signup', userData)
+    .then(response => {
+      token.set(response.data.token);
+      return dispatch(authActions.registerSuccess(response.data));
+    })  
+    .catch (error => dispatch(authActions.registerError(error.message))) 
+     
+};
 
-const login = userData => async dispatch => {
+/*
+ * POST @ /users/login
+ * body: { email, password }
+ * После успешного логина добавляем токен в HTTP-заголовок
+ */
+const login = userData => dispatch => {
   dispatch(authActions.loginRequest());
 
-  try {
-    const response = await axios.post('/users/login', userData);
+  axios
+  .post('/users/login', userData)
+  .then(response => {
     token.set(response.data.token);
-    dispatch(authActions.loginSuccess(response.data))
-  } catch (error) {
-    dispatch(authActions.loginError(error.message))
-  }
-}
+   return dispatch(authActions.loginSuccess(response.data))
+  })
+    
+  .catch (error => dispatch(authActions.loginError(error.message))) 
+};
 
-const logout = () => async dispatch => {
+/*
+ * POST @ /users/logout
+ * headers: Authorization: Bearer token
+ * После успешного логаута, удаляем токен из HTTP-заголовка
+ */
+const logout = () => dispatch => {
+  console.log(logout);
   dispatch(authActions.logoutRequest());
-  try {
-    await axios.post('users/logout');
-    token.unset();
-    dispatch(authActions.logoutSuccess())
-  } catch (error) {
-    dispatch(authActions.logoutError(error.message))
-  }
-}
+  
+    axios
+    .post('users/logout')
+    .then(_ => {
+      token.unset();
+      dispatch(authActions.logoutSuccess());
+    })
+    .catch (error => dispatch(authActions.logoutError(error.message))) 
+};
 
+/*
+ * GET @ /users/current
+ * headers:
+ *    Authorization: Bearer token
+ *
+ * 1. Забираем токен из стейта через getState()
+ * 2. Если токена нет, выходим не выполняя никаких операций
+ * 3. Если токен есть, добавляет его в HTTP-заголовок и выполняем операцию
+ */
 const getCurrentUser = () => async (dispatch, getState) => {
   const { auth: { token: persistedToken } } = getState();
 

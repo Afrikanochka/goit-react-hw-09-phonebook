@@ -1,58 +1,78 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { getContacts } from '../../redux/phonebook/phonebook-selectors';
 import * as contactsOperations from '../../redux/phonebook/phonebook-operations';
 
 import s from './InputForm.module.css';
+import { toast } from 'react-toastify';
 
-class InputForm extends Component {
-  static propTypes = {
-    onSubmit: PropTypes.func.isRequired,
-  };
 
-  state = {
-    name: '',
-    number: '',
-  };
+const InputForm = () => {
+const dispatch = useDispatch();
 
-  handleChange = event => {
-    const { name, value } = event.currentTarget;
-    this.setState({ [name]: value });
-  };
+const contacts = useSelector(getContacts);
+const [name, setName] = useState('');
+const [number, setNumber] = useState('');
 
-  handleSubmit = event => {
-    event.preventDefault();
-    const { name } = this.state;
-    const { contacts, onSubmit } = this.props;
-    const sameContact = contacts.find(
-      item => item.name.toLowerCase() === name.toLowerCase(),
-    );
-    if (sameContact) {
-      alert(`${name} Already exists`);
-      this.reset();
+
+const handleChange = e => {
+  const { name, value } = e.target;
+  switch (name) {
+    case 'name':
+      setName(value);
+      break;
+
+    case 'number':
+      setNumber(value);
+      break;
+
+    default:
       return;
+  }
+};
+ 
+  const checkRepeatName = name => {
+    return contacts.find(
+      contact => contact.name.toLowerCase() === name.toLowerCase(),
+    );
+  };
+
+  const checkRepeatNumber = number => {
+    return contacts.find(contact => contact.number === number);
+  };
+
+  const checkEmptyQuery = (name, number) => {
+    return name.trim() === '' || number.trim() === '';
+  };
+
+  const handleSubmit = e => {
+    e.preventDefault();
+    if (checkRepeatName(name)) {
+      return toast(`🤔 ${name} is already in the phonebook.`);
+    } else if (checkRepeatNumber(number)) {
+      return toast(`🤔 ${number} is already in the phonebook.`);
+    } else if (checkEmptyQuery(name, number)) {
+      return toast.info("😱 Enter the contact's name and number phone!");
+    } else {
+      dispatch(contactsOperations.addContact({name, number}));
     }
-    onSubmit(this.state);
-    this.reset();
+    resetInput();
   };
 
-  reset = () => {
-    this.setState({ name: '', number: '' });
+  const resetInput = () => {
+    setName('');
+    setNumber('');
   };
-
-  render() {
-    const { name, number } = this.state;
-    return (
-      <form className={s.form} onSubmit={this.handleSubmit}>
+  return (
+    <form className={s.form} onSubmit={handleSubmit}>
         <label className={s.label} htmlFor="name">
           Name
         </label>
         <input
           id="name"
           type="text"
-          onChange={this.handleChange}
+          onChange={handleChange}
           className={s.input}
           name="name"
           value={name}
@@ -67,7 +87,7 @@ class InputForm extends Component {
         <input
           id="number"
           type="text"
-          onChange={this.handleChange}
+          onChange={handleChange}
           className={s.input}
           name="number"
           value={number}
@@ -78,16 +98,37 @@ class InputForm extends Component {
           Add contact
         </button>
       </form>
-    );
-  }
+
+  );
 }
-const mapStateToProps = state => ({
-  contacts: getContacts(state),
-});
 
-const mapDispatchToProps = dispatch => ({
-  onSubmit: ({ name, number }) =>
-    dispatch(contactsOperations.addContact({ name, number })),
-});
+export default InputForm;
 
-export default connect(mapStateToProps, mapDispatchToProps)(InputForm);
+  // handleSubmit = event => {
+  //   event.preventDefault();
+  //   const { name } = this.state;
+  //   const { contacts, onSubmit } = this.props;
+  //   const sameContact = contacts.find(
+  //     item => item.name.toLowerCase() === name.toLowerCase(),
+  //   );
+  //   if (sameContact) {
+  //     alert(`${name} Already exists`);
+  //     this.reset();
+  //     return;
+  //   }
+  //   onSubmit(this.state);
+  //   this.reset();
+  // };
+
+  // reset = () => {
+  //   this.setState({ name: '', number: '' });
+  // };
+
+//   render() {
+//     const { name, number } = this.state;
+//     return (
+      
+//     );
+//   }
+// }
+

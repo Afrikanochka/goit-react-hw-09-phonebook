@@ -1,9 +1,9 @@
 import React from 'react';
 
-import s from './HomeView.module.css';
+import s from './HomePage.module.css';
 
-const HomeView = () => {
+const HomePage = () => {
   return <h1 className={s.heading}>Welcome! Your Phonebook is ready to go!</h1>;
 };
 
-export default HomeView;
+export default HomePage;

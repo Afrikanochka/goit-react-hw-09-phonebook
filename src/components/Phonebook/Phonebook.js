@@ -1,12 +1,16 @@
 import React from 'react';
-import { connect } from 'react-redux';
+import {  useSelector } from 'react-redux';
 
 import { getVisibleContacts } from '../../redux/phonebook/phonebook-selectors';
 
 import s from './Phonebook.module.css';
 import PhonebookItem from './PhonebookItem';
 
-const Phonebook = ({ contacts }) => {
+const Phonebook = () => {
+
+ // TODO фильтруем, показываем только те что совпадают*/
+const contacts = useSelector(getVisibleContacts);
+
   return (
     <>
       {contacts && (
@@ -22,10 +26,10 @@ const Phonebook = ({ contacts }) => {
   );
 };
 
-const mapStateToProps = state => {
-  return {
-    contacts: getVisibleContacts(state),
-  };
-};
+// const mapStateToProps = state => {
+//   return {
+//     contacts: getVisibleContacts(state),
+//   };
+// };
 
-export default connect(mapStateToProps)(Phonebook);
+export default Phonebook;

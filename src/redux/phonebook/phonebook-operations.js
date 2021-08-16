@@ -2,7 +2,7 @@ import axios from 'axios';
 
 import { fetchContactsRequest, fetchContactsSuccess, fetchContactsError, addContactRequest, addContactSuccess, addContactError, deleteContactRequest, deleteContactSuccess, deleteContactError } from './phonebook-actions';
 
-axios.defaults.baseURL = 'https://goit-phonebook-api.herokuapp.com';
+// axios.defaults.baseURL = 'https://goit-phonebook-api.herokuapp.com';
 
 export const fetchContacts = () => dispatch => {
   dispatch(fetchContactsRequest());
@@ -11,11 +11,8 @@ export const fetchContacts = () => dispatch => {
     .catch(error => dispatch(fetchContactsError(error.message)));
 }
 
-export const addContact = ({ name, number }) => dispatch => {
-  const contact = {
-    name,
-    number
-  }
+export const addContact = (contact) => dispatch => {
+  
 
   dispatch(addContactRequest());
 

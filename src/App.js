@@ -1,27 +1,29 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Switch } from 'react-router-dom';
 
-import Appbar from './components/Appbar/Appbar';
-import Login from './views/Login/Login';
-import HomeView from './views/HomeView/HomeView';
-import Signup from './views/Signup/Signup';
-import Contacts from './views/Contacts/Contacts';
-import PublicRoute from './components/PublicRoute';
-import PrivateRoute from './components/PrivateRoute';
+import Header from './components/Header/Header';
+import Login from './pages/Login/Login';
+import HomePage from './pages/HomePage/HomePage';
+import Signup from './pages/Signup/Signup';
+import Contacts from './pages/Contacts/Contacts';
+import PublicRoute from './routes/PublicRoute';
+import PrivateRoute from './routes/PrivateRoute';
 import authOperations from './redux/auth/auth-operations';
 
-class App extends Component {
-  componentDidMount() {
-    this.props.onGetCurrentUser();
-  }
+const App = () => {
+const dispatch = useDispatch();
+const isAuth = useSelector(state => state.auth.token);
+useEffect(() => {
+  isAuth && dispatch(authOperations.getCurrentUser());
+  
+}, [dispatch, isAuth]);
 
-  render() {
-    return (
-      <>
-        <Appbar />
+  return (
+         <>
+        <Header />
         <Switch>
-          <PublicRoute exact path="/" component={HomeView} />
+          <PublicRoute exact path="/" component={HomePage} />
           <PublicRoute
             path="/signup"
             restricted
@@ -40,13 +42,26 @@ class App extends Component {
             component={Contacts}
           />
         </Switch>
-      </>
-    );
-  }
+      </> 
+  );
 }
 
-const mapDispatchToProps = {
-  onGetCurrentUser: authOperations.getCurrentUser,
-};
+export default App;
 
-export default connect(null, mapDispatchToProps)(App);
+// class App extends Component {
+//   componentDidMount() {
+//     this.props.onGetCurrentUser();
+//   }
+
+//   render() {
+//     return (
+
+//     );
+//   }
+// }
+
+// const mapDispatchToProps = {
+//   onGetCurrentUser: authOperations.getCurrentUser,
+// };
+
+// export default connect(null, mapDispatchToProps)(App);
